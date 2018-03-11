@@ -31,9 +31,14 @@ int main(int argc, char* argv[]) {
 	*/
 
 	MyClass<int>* mc = MyClass<int>::MyClassFactory::factory()
-		->add(1)
-		->add(2)
-		->build()
+		.add(1)
+		.add(2)
+		.add(3)
+		.add(4)
+		.add(5)
+		.add(6)
+		.add(7)
+		.build()
 		;
 
 	printVector(mc->getVector());
