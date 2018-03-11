@@ -13,19 +13,16 @@ template <typename T>
 class MyClass {
 
 private:
-	std::vector<T> m_v;
-	
+	MyClass();
+	std::vector<T> m_v;	
 	bool m_isValidated;
-
-	MyClass() : m_factory(nullptr){}
+	
 
 public:
 
 	MyClass(const MyClass& other) = delete;
 
-	~MyClass() { 
-		delete m_factory; 
-	}
+	~MyClass();
 
 	const std::vector<T>& getVector();
 
@@ -34,13 +31,7 @@ public:
 	private:
 		MyClass* m_myClass;
 
-		MyClassFactory(MyClass* mc) : m_myClass(mc) {
-			m_myClass->m_factory = this; 
-			#if DEBUG
-				std::cout << "Factory Class Constructor\n";
-			#endif
-		}
-		
+		MyClassFactory(MyClass* mc);
 
 	public:
 		static MyClassFactory* factory();

@@ -1,7 +1,29 @@
+#include "MyClass.h"
 template <typename T>
-typename const std::vector<T>& MyClass<T>::getVector(){
+MyClass<T>::MyClass() : m_factory(nullptr) {}
+
+
+template <typename T>
+MyClass<T>::~MyClass() {
+	delete m_factory;
+}
+
+template <typename T>
+typename const std::vector<T>& MyClass<T>::getVector() {
 	return m_v;
 }
+
+
+//.......FACTORY...........
+
+template <typename T>
+MyClass<T>::MyClassFactory::MyClassFactory(MyClass<T> * mc) : m_myClass(mc) {
+	m_myClass->m_factory = this;
+#if DEBUG
+	std::cout << "Factory Class Constructor\n";
+#endif
+}
+
 
 template <typename T>
 typename MyClass<T>::MyClassFactory* MyClass<T>::MyClassFactory::factory() {
@@ -21,3 +43,4 @@ typename MyClass<T>::MyClassFactory* MyClass<T>::MyClassFactory::add(const T& va
 	m_myClass->m_v.emplace_back(val);
 	return this;
 }
+
