@@ -21,6 +21,10 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\MyClass.h" />
+    <ClInclude Include="include\MyClass.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D6A8863C-1758-49D3-8C06-B6864D618F0A}</ProjectGuid>
