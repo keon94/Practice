@@ -20,23 +20,28 @@ class MyClass {
 	
 	public:
 		MyClass();
-		MyClass(const MyClass& other);
 		~MyClass();
+		MyClass(const MyClass& other);
+		MyClass(MyClass&& other);
+		MyClass& operator= (const MyClass& other);
+		MyClass& operator= (MyClass&& other);
+
 		const std::vector<T>& getVector();
 
 		class MyClassFactory {
 
 			private:
-				MyClass* m_myClass;
+				MyClass m_myClass;
 				
 			public:
-				MyClassFactory(MyClass* mc);
+				MyClassFactory();
+				MyClassFactory(const MyClass& mc);
 				MyClassFactory(const MyClassFactory& other);
-				MyClassFactory(const MyClassFactory&& other);
+				MyClassFactory(MyClassFactory&& other);
 				~MyClassFactory();
 				static MyClassFactory factory();
 				MyClassFactory& add(const T& val);
-				MyClass* build();
+				const MyClass& build();
 
 		};
 };

@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	return RUN_ALL_TESTS();
 	*/
 
-	MyClass<int>* mc = MyClass<int>::MyClassFactory::factory()
+	MyClass<int> mc = MyClass<int>::MyClassFactory::factory()
 		.add(1)
 		.add(2)
 		.add(3)
@@ -41,7 +41,6 @@ int main(int argc, char* argv[]) {
 		.build()
 		;
 
-	printVector(mc->getVector());
-	delete mc;
+	printVector(mc.getVector());
 	return 0;
 }
