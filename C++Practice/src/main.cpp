@@ -36,13 +36,10 @@ const std::vector<T>& Base<T>::getVector()
 	return this->m_vector;
 }
 
-class Derived : public Base<int> {
+class DerivedFactory : public Base<int>::BaseFactory<DerivedFactory> {
 public:
-	class DerivedFactory : public Base::BaseFactory<DerivedFactory> {
+	DerivedFactory * add(int);
 
-	public:
-		DerivedFactory * add(int);
-	};
 };
 
 
@@ -79,7 +76,7 @@ BaseFactory<T, SubBaseFactory>::BaseFactory()
 	m_Base = new Base();
 }
 
-Derived::DerivedFactory * Derived::DerivedFactory::add(int x)
+DerivedFactory * DerivedFactory::add(int x)
 {
 	getVector().emplace_back(x);
 	return this;
@@ -95,7 +92,7 @@ void printVector(const std::vector<T> v) {
 
 int main() {
 
-	auto b = Derived::DerivedFactory::factory()
+	auto b = DerivedFactory::factory()
 		->add(1)
 		->add(2)
 		->add(3)
