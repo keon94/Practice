@@ -131,7 +131,11 @@
     <None Include="src\.gitkeep" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\kstringTests.cpp" />
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\kstring.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
