@@ -27,13 +27,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -46,7 +46,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -100,6 +100,10 @@
       <AdditionalDependencies>gtest.lib;gmock.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -116,11 +120,13 @@
       <AdditionalDependencies>gtest.lib;gmock.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <ImportLibrary>
+      </ImportLibrary>
+      <ShowProgress>LinkVerboseCLR</ShowProgress>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\*.dll $(OutDir) 2&gt;nul
- xcopy /s /c /y /q $(SolutionDir)..\lib\*.manifest $(OutDir) 2&gt;nul
-	  </Command>
+      <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,6 +145,10 @@
       <AdditionalDependencies>gtest.lib;gmock.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -156,6 +166,10 @@
       <AdditionalDependencies>gtest.lib;gmock.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="include\.gitkeep" />
@@ -163,6 +177,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\TimerTests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Project\Project.vcxproj">
+      <Project>{d6a8863c-1758-49d3-8c06-b6864d618f0a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\gtest-utilities.h" />
