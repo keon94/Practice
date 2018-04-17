@@ -1,6 +1,6 @@
 #ifndef TIMER_H_
 #define TIMER_H_
-//#include <fstream>
+#include <stdio.h>
 
 namespace PerfAssessment {
  
@@ -10,6 +10,13 @@ namespace PerfAssessment {
         using ulong = unsigned long;
 
         public:
+
+			struct TimeAttributes {
+				ullong MaxDuration;
+				ullong MinDuration;
+				double AvgDuration;
+				double Variance;
+			};
 
             enum Units { SECONDS, MILISECONDS, MICROSECONDS, NANOSECONDS };
 
@@ -26,28 +33,31 @@ namespace PerfAssessment {
             
             Timer& enableCaching();
             
-            void showStats(const char* functionName = 0) const;
+			const Timer& showStats(const char* functionName = 0) const;
+
+			const Timer& writeStats(const char* fileName, bool overwrite = true) const;
+
+			const Timer& writeStats(const char* functionName, const char* fileName, bool overwrite = true) const;
+
+			TimeAttributes getStats() const;
 
         private:
 
             struct UnitAttributes {
-                ulong _divider;
-                unsigned _sigfigs;
-                const char* _unitName;
+                ulong Divider;
+                unsigned Sigfigs;
+                const char* UnitName;
             } _unitAttributes;
 
-            struct TimeAttributes {
-                ullong _maxDuration;
-                ullong _minDuration;
-                double _avgDuration;
-                double _variance;
-            } _timeStats;
+			TimeAttributes _timeStats;
         
         private:
             
             void flushCpuCache() const;
 
             void setUnitAttributes(const Units& units);
+
+			const Timer& streamStats(FILE* out, const char* functionName = 0) const;
         
         private:
             unsigned _execTimes;
@@ -58,6 +68,8 @@ namespace PerfAssessment {
 #endif
 
 #include <chrono>
+
+#define F_Call(F) [this]() { F; }
 
 namespace PerfAssessment {
     template <typename F, typename... Args>
@@ -75,12 +87,12 @@ namespace PerfAssessment {
             ullong duration = duration_cast<nanoseconds>(end - start).count();
             timesExecuted++;
             if(_verbose)
-                printf("Run %d: %.*f %s\n", timesExecuted, _unitAttributes._sigfigs, static_cast<double>(duration)/_unitAttributes._divider, _unitAttributes._unitName);
-            _timeStats._maxDuration = duration > _timeStats._maxDuration ? duration : _timeStats._maxDuration;
-            _timeStats._minDuration = duration < _timeStats._minDuration ? duration : _timeStats._minDuration;
-            _timeStats._avgDuration = ((timesExecuted - 1)*_timeStats._avgDuration + duration) / timesExecuted;
+                printf("Run %d: %.*g %s\n", timesExecuted, _unitAttributes.Sigfigs, static_cast<double>(duration)/_unitAttributes.Divider, _unitAttributes.UnitName);
+            _timeStats.MaxDuration = duration > _timeStats.MaxDuration ? duration : _timeStats.MaxDuration;
+            _timeStats.MinDuration = duration < _timeStats.MinDuration ? duration : _timeStats.MinDuration;
+            _timeStats.AvgDuration = ((timesExecuted - 1)*_timeStats.AvgDuration + duration) / timesExecuted;
             auto Sq = [](auto x){ return x*x; };
-            _timeStats._variance = timesExecuted < 2 ? 0 : ((timesExecuted - 2)*_timeStats._variance + Sq(duration - _timeStats._avgDuration)) / timesExecuted;
+            _timeStats.Variance = timesExecuted < 2 ? 0 : ((timesExecuted - 2)*_timeStats.Variance + Sq(duration - _timeStats.AvgDuration)) / timesExecuted;
         }
         return *this;
     }
