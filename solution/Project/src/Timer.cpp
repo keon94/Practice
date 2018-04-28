@@ -4,7 +4,8 @@ namespace PerfAssessment {
     Timer::Timer(const Units& units):
         _execTimes(1),
         _cachingEnabled(false),
-        _verbose(false)
+        _verbose(false),
+        _result(nullptr)
     {
         _timeStats.MinDuration = ULLONG_MAX;
         _timeStats.Variance = 0;
@@ -13,7 +14,7 @@ namespace PerfAssessment {
         setUnitAttributes(units);
     }
 
-        Timer& Timer::times(unsigned ntimes) {
+    Timer& Timer::times(unsigned ntimes) {
         _execTimes = ntimes;
         return *this;
     }
