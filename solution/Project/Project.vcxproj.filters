@@ -19,6 +19,9 @@
     <None Include="include\.gitkeep" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\u_ptr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

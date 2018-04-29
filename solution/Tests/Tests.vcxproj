@@ -189,6 +189,7 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\TimerTests.cpp" />
+    <ClCompile Include="src\UniquePtrTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\Project.vcxproj">

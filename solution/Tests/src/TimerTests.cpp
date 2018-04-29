@@ -16,7 +16,7 @@ protected:
     ClassUnderTest _UUT;
 };
 
-using PerfAssessment::Timer;
+using perf::assess::Timer;
 
 TEST_F(TimerTestsFixture, testWithNoCacheOptimization) {
     auto f = [this]() {
@@ -51,11 +51,11 @@ TEST_F(TimerTestsFixture, writeOutputToFile) {
 }
 
 TEST_F(TimerTestsFixture, writeOutputToFileAndStdOut) {
-	auto stats = Timer(Timer::Units::NANOSECONDS)
-		.verbose()
-		.times(10)
-		.enableCaching()
-		.execute(F_CALL(_UUT.testFunction1(3, 5)))
+    auto& stats = Timer(Timer::Units::NANOSECONDS)
+        .verbose()
+        .times(10)
+        .enableCaching()
+        .execute(F_CALL(_UUT.testFunction1(3, 5)))
 		.showStats("testFunction1")
 		.writeStats("testFunction1", "output.txt", F_OVERWRITE);
 }
