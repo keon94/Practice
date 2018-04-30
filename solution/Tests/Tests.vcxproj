@@ -69,23 +69,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\bin\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\include;$(SolutionDir)Project\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Platform)\$(Configuration)\bin\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\include;$(SolutionDir)Project\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(Platform)\$(Configuration)\bin\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\include;$(SolutionDir)Project\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(Platform)\$(Configuration)\bin\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\include;$(SolutionDir)Project\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -94,15 +94,18 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>gtest.lib;gmock.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.pdb $(OutDir) &gt;nul
 xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -114,7 +117,8 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -129,6 +133,7 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
     </Link>
     <PostBuildEvent>
       <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.pdb $(OutDir) &gt;nul
 xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -140,7 +145,8 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -152,6 +158,7 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
     </Link>
     <PostBuildEvent>
       <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.pdb $(OutDir) &gt;nul
 xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -163,7 +170,8 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
@@ -179,6 +187,7 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
     </Link>
     <PostBuildEvent>
       <Command>xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.dll $(OutDir) &gt;nul
+xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.pdb $(OutDir) &gt;nul
 xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)\*.manifest $(OutDir) &gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -188,7 +197,6 @@ xcopy /s /c /y /q $(SolutionDir)..\lib\$(ProcessorArchitecture)\$(Configuration)
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\TimerTests.cpp" />
     <ClCompile Include="src\UniquePtrTests.cpp" />
   </ItemGroup>
   <ItemGroup>

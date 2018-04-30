@@ -19,6 +19,9 @@ namespace perf {
     };
 
     template <typename T>
+    using Deleter = void(*)(T*);
+
+    template <typename T>
     class b_ptr {
 
     public:
@@ -30,6 +33,8 @@ namespace perf {
         virtual void setType(const size_t& type) = 0;
 
         virtual size_t getType() const = 0;
+
+        virtual Deleter<T> getDeleter() const = 0;
 
     };
 
@@ -45,7 +50,7 @@ namespace perf {
     public:
 
         u_ptr() : 
-            _type(_typeid_(T)), 
+            _deleter([](T* addr) { delete[] addr; }),
             _raw(nullptr) {
                 if constexpr (!Types<void, T>::ARE_SAME) {
                     _raw = new T();
@@ -53,12 +58,12 @@ namespace perf {
             }
 
         u_ptr(T* ptr) :
-            _type(_typeid_(T)),
+            _deleter([](T* addr) { delete[] addr; }),
             _raw(ptr) {}
 
         template <typename Arg1, typename... Args>
         explicit u_ptr(Arg1&& arg1, Args&&... args) : 
-            _type(_typeid_(T)),
+            _deleter([](T* addr) { delete addr; }),
             _raw(new T(arg1, args...)) {}
 
 
@@ -79,7 +84,6 @@ namespace perf {
         u_ptr& operator= (U* other) {
             clean<T>();
             _raw = other;
-            _type = _typeid_(U);
             return *this;
         }
         
@@ -89,7 +93,7 @@ namespace perf {
             return *this;
         }
 
-        template <typename U = T>
+        template<typename U = T>
         U& operator* () {
             return *_raw;
         }
@@ -126,14 +130,17 @@ namespace perf {
             return getRaw();
         }
 
+        u_ptr& setDeleter(const Deleter<T>& deleter) {
+            _deleter = deleter;
+            return *this;
+        }
+
     private:
 
         template<typename U>
         void clean() {
             if (_raw) {
-                if (_type != _typeid_(void)) {
-                    delete _raw;
-                }
+                _deleter(_raw);
                 _raw = nullptr;
             }
         }
@@ -164,9 +171,14 @@ namespace perf {
             _type = type;
         }
 
+        virtual Deleter<T> getDeleter() const override {
+            return _deleter;
+        }
+
     private:
         T* _raw;
         size_t _type;
+        Deleter<T> _deleter;
     };
 
 }
