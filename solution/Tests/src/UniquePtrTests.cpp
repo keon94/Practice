@@ -62,6 +62,12 @@ TEST_F(UptrFixture, no_mem_leak_void_ptr) {
 
 }
 
+TEST_F(UptrFixture, no_mem_arr_ptr) {
+    run([&]() {
+        u_ptr<int[]> ptr;
+    });
+}
+
 TEST_F(UptrFixture, no_mem_leak_int_ptr) {
     run([&]() {
         int* x = new int(1);

@@ -1,11 +1,8 @@
 #ifndef U_PTR_H_
 #define U_PTR_H_
 
-#include <typeinfo>
-
 namespace perf {
 
-    #define _typeid_(x) typeid(x).hash_code()
     #define _addr_(x) static_cast<void*>(&x)
 
     template <typename T, typename U>
@@ -16,6 +13,16 @@ namespace perf {
     template <typename T>
     struct Types<T, T> {
         static constexpr bool ARE_SAME = true;
+    };
+
+    template<typename T>
+    struct IsArray { 
+        static constexpr bool VALUE = false; 
+    };
+
+    template<typename T>
+    struct IsArray<T[]> { 
+        static constexpr bool VALUE = true;
     };
 
     template <typename T>
@@ -29,12 +36,6 @@ namespace perf {
         virtual void setRaw(T* addr) = 0;
 
         virtual T* getRaw() const = 0;
-
-        virtual void setType(const size_t& type) = 0;
-
-        virtual size_t getType() const = 0;
-
-        virtual Deleter<T> getDeleter() const = 0;
 
     };
 
@@ -50,22 +51,17 @@ namespace perf {
     public:
 
         u_ptr() : 
-            _deleter([](T* addr) { delete[] addr; }),
-            _raw(nullptr) {
-                if constexpr (!Types<void, T>::ARE_SAME) {
-                    _raw = new T();
-                }
-            }
+            _deleter(setDefaultDeleter()),
+            _raw(nullptr) {}
 
         u_ptr(T* ptr) :
-            _deleter([](T* addr) { delete[] addr; }),
+            _deleter(setDefaultDeleter()),
             _raw(ptr) {}
 
-        template <typename Arg1, typename... Args>
-        explicit u_ptr(Arg1&& arg1, Args&&... args) : 
-            _deleter([](T* addr) { delete addr; }),
-            _raw(new T(arg1, args...)) {}
-
+        template <typename... Args>
+        explicit u_ptr(Args&&... args) : 
+            _deleter(setDefaultDeleter()),
+            _raw(new T(args...)) {}
 
         ~u_ptr() {
             clean<T>();
@@ -82,8 +78,7 @@ namespace perf {
 
         template<typename U>
         u_ptr& operator= (U* other) {
-            clean<T>();
-            _raw = other;
+            move<U>(other);
             return *this;
         }
         
@@ -93,7 +88,7 @@ namespace perf {
             return *this;
         }
 
-        template<typename U = T>
+        template<typename U>
         U& operator* () {
             return *_raw;
         }
@@ -130,9 +125,17 @@ namespace perf {
             return getRaw();
         }
 
-        u_ptr& setDeleter(const Deleter<T>& deleter) {
+        inline u_ptr& setDeleter(const Deleter<T>& deleter) {
             _deleter = deleter;
             return *this;
+        }
+
+        template <typename U>
+        inline Deleter<U> getDeleter() const {
+            if constexpr (!Types<U, T>::ARE_SAME)
+                return [](U* addr) { delete addr; };
+            else
+                return _deleter;
         }
 
     private:
@@ -146,13 +149,22 @@ namespace perf {
         }
 
         template<typename U>
-        void move(b_ptr<U>& other) {
+        void move(u_ptr<U>& other) {
             if (_addr_(*this) != _addr_(other)) {
                 clean<T>();
-                _raw = other.getRaw();
-                _type = other.getType();
-                other.setRaw(nullptr);
+                _raw = static_cast<b_ptr<U>&>(other).getRaw();
+                if constexpr (!Types<void, U>::ARE_SAME)
+                    _deleter = other.getDeleter<T>();
+                static_cast<b_ptr<U>&>(other).setRaw(nullptr);
             }
+        }
+
+        template<typename U>
+        void move(U* addr) {
+            clean<T>();
+            _raw = addr;
+            if constexpr (!Types<void, U>::ARE_SAME)
+                _deleter = [](U* addr) { delete addr; };
         }
 
         virtual T* getRaw() const override {
@@ -163,25 +175,25 @@ namespace perf {
             _raw = addr;
         }
 
-        virtual size_t getType() const override {
-            return _type;
+        inline Deleter<T> setDefaultDeleter() {
+            if constexpr (IsArray<T>::VALUE) {
+                return [](T* addr) { return delete[] addr; };
+            }
+            else {
+                return [](T* addr) { return delete addr; };
+            }
         }
 
-        virtual void setType(const size_t& type) override {
-            _type = type;
-        }
+        template <typename ... Args>
+        T* allocater(Args ... args) {
 
-        virtual Deleter<T> getDeleter() const override {
-            return _deleter;
         }
 
     private:
         T* _raw;
-        size_t _type;
         Deleter<T> _deleter;
     };
 
 }
 #undef _addr_
-#undef _typeid_
 #endif
