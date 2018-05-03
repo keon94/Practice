@@ -10,9 +10,14 @@ protected:
 
     struct X {
         virtual int returnOne() = 0;
+        virtual ~X() {}
     };
 
     struct Y : public X {
+        char* str = new char[10];
+        ~Y() {
+            delete[] str;
+        }
         virtual int returnOne() {
             return 1;
         }
@@ -64,7 +69,8 @@ TEST_F(UptrFixture, no_mem_leak_void_ptr) {
 
 TEST_F(UptrFixture, no_mem_arr_ptr) {
     run([&]() {
-        u_ptr<int[]> ptr;
+        u_ptr<int> ptr = u_ptr<int[3]>();
+        ptr.get()[0] = 0;    
     });
 }
 
@@ -80,7 +86,7 @@ TEST_F(UptrFixture, no_mem_leak_int_ptr) {
 TEST_F(UptrFixture, polymorphism) {
     int x;
     run([&]() {
-    u_ptr<X> ptr = u_ptr<Y>();
+    u_ptr<X> ptr = u_ptr<Y>(new Y());
     x = ptr->returnOne();
     });
     ASSERT_EQ(x , 1);
