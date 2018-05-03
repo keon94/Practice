@@ -61,12 +61,6 @@ namespace perf {
                 const char* UnitName;
             } _unitAttributes;
 
-            template<typename R>
-            struct Result {
-                Result(const R& value) : value(value) {}
-                const R value;
-            };
-
             TimeAttributes _timeStats;
 
         private:
@@ -105,7 +99,7 @@ namespace perf {
         R Timer::getResult() const {
             if (!_result)
                 throw std::exception("Error in Timer::getResult(): execute() has not been called.");
-            return *static_cast<R*>(_result.get());
+            return *static_cast<R*>(_result);
         }
 
         template <typename F>

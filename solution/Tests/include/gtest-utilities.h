@@ -4,12 +4,17 @@
 //Enables leak information to be output to the console
 #define DISPLAY_LEAKS_DETAILS 1
 
+#define _NO_LEAK_CHECK(x) \
+    VLDGlobalDisable();\
+    x;\
+    VLDGlobalEnable();\
+
 /**
  * \brief runs \ref f and checks for leaks
  * \param f an F(void) function (typically lambda) to test 
  */
 template <typename F>
-void test_with_leak_check(F&& f) {
+void run(F&& f) {
     VLDMarkAllLeaksAsReported();
     VLDGlobalEnable();
     f();

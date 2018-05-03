@@ -23,10 +23,10 @@ TEST_F(TimerTestsFixture, testWithNoCacheOptimization) {
         _UUT.testFunction1(3, 5);
     };
     Timer(Timer::Units::MILISECONDS)
-		.verbose()
-		.times(10)
+        .verbose()
+        .times(10)
         .execute(f)
-		.showStats("testFunction1");
+        .showStats("testFunction1");
 }
 
 TEST_F(TimerTestsFixture, testWithCacheOptimization) {
@@ -42,12 +42,12 @@ TEST_F(TimerTestsFixture, testWithCacheOptimization) {
 
 TEST_F(TimerTestsFixture, writeOutputToFile) {
 	auto stats = Timer(Timer::Units::MILISECONDS)
-		.verbose()
-		.times(10)
-		.enableCaching()
+        .verbose()
+        .times(10)
+        .enableCaching()
         .execute(F_CALL(_UUT.testFunction1(3, 5)))
-		.showStats("testFunction1")
-		.getStats();
+        .showStats("testFunction1")
+        .getStats();
 }
 
 TEST_F(TimerTestsFixture, writeOutputToFileAndStdOut) {
@@ -56,6 +56,6 @@ TEST_F(TimerTestsFixture, writeOutputToFileAndStdOut) {
         .times(10)
         .enableCaching()
         .execute(F_CALL(_UUT.testFunction1(3, 5)))
-		.showStats("testFunction1")
-		.writeStats("testFunction1", "output.txt", F_OVERWRITE);
+        .showStats("testFunction1")
+        .writeStats("testFunction1", "output.txt", F_OVERWRITE);
 }

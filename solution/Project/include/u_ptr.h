@@ -1,9 +1,13 @@
 #ifndef U_PTR_H_
 #define U_PTR_H_
 
-namespace perf {
+#ifndef PORT_DLL
+#define PORT_DLL
+#endif
 
-    #define _addr_(x) static_cast<void*>(&x)
+#define _addr_(x) static_cast<void*>(&x)
+
+namespace perf {
 
     template <typename T, typename U>
     struct Types {
@@ -16,12 +20,17 @@ namespace perf {
     };
 
     template<typename T>
-    struct IsArray { 
-        static constexpr bool VALUE = false; 
+    struct IsArray {
+        static constexpr bool VALUE = false;
     };
 
     template<typename T>
-    struct IsArray<T[]> { 
+    struct IsArray<T[]> {
+        static constexpr bool VALUE = true;
+    };
+
+    template<typename T, unsigned N>
+    struct IsArray<T[N]> {
         static constexpr bool VALUE = true;
     };
 
@@ -39,27 +48,27 @@ namespace perf {
 
     };
 
-    #ifdef PORT_DLL
     template <typename T>
     class PORT_DLL u_ptr : public b_ptr<T>
-    #else
-    template <typename T>
-    class u_ptr : public b_ptr<T>
-    #endif
     {
 
     public:
 
-        u_ptr() : 
+        u_ptr() :
             _deleter(setDefaultDeleter()),
-            _raw(nullptr) {}
+            _raw(nullptr)
+        {
+            if constexpr (IsArray<T>::VALUE && !Types<void, T>::ARE_SAME) {
+                _raw = new T();
+            }
+        }
 
         u_ptr(T* ptr) :
             _deleter(setDefaultDeleter()),
             _raw(ptr) {}
 
-        template <typename... Args>
-        explicit u_ptr(Args&&... args) : 
+        template <typename ... Args> //new T(args...)
+        explicit u_ptr(Args&&... args) :
             _deleter(setDefaultDeleter()),
             _raw(new T(args...)) {}
 
@@ -81,7 +90,7 @@ namespace perf {
             move<U>(other);
             return *this;
         }
-        
+
         template<typename U>
         u_ptr& operator= (u_ptr<U>&& other) {
             move<U>(other);
@@ -94,11 +103,16 @@ namespace perf {
         }
 
         T* operator-> () {
-            return _raw;
+            return static_cast<T*>(_raw);
         }
 
         bool operator! () const {
             return !_raw;
+        }
+
+        template<typename U>
+        operator U* () const {
+            return reinterpret_cast<U*>(_raw);
         }
 
         template<typename U>
@@ -143,7 +157,7 @@ namespace perf {
         template<typename U>
         void clean() {
             if (_raw) {
-                _deleter(_raw);
+                _deleter(static_cast<U*>(_raw));
                 _raw = nullptr;
             }
         }
@@ -168,7 +182,7 @@ namespace perf {
         }
 
         virtual T* getRaw() const override {
-            return _raw;
+            return static_cast<T*>(_raw);
         }
 
         virtual void setRaw(T* addr) override {
@@ -184,13 +198,8 @@ namespace perf {
             }
         }
 
-        template <typename ... Args>
-        T* allocater(Args ... args) {
-
-        }
-
     private:
-        T* _raw;
+        void* _raw;
         Deleter<T> _deleter;
     };
 
