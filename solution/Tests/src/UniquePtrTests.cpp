@@ -72,20 +72,20 @@ TEST_F(UptrFixture, type_casts) {
 }
 
 TEST_F(UptrFixture, arr_ptr) {
-    int x0, x1, x2;
+    std::string x0, x1, x2;
     run([&]() {
-        u_ptr<int> ptr = u_ptr<int[3]>();
-        ptr.get()[0] = 0;
-        ptr.get()[1] = 1;
-        ptr.get()[2] = 2;
-        int* p = ptr;
+        u_ptr<std::string> ptr = u_ptr<std::string[3]>();
+        ptr.get()[0] = "str0";
+        ptr.get()[1] = "str1";
+        ptr.get()[2] = "str2";
+        std::string* p = ptr;
         x0 = *p;
         x1 = *++p;
         x2 = *++p;
     });
-    ASSERT_EQ(x0, 0);
-    ASSERT_EQ(x1, 1);
-    ASSERT_EQ(x2, 2);
+    ASSERT_EQ(x0, "str0");
+    ASSERT_EQ(x1, "str1");
+    ASSERT_EQ(x2, "str2");
 }
 
 TEST_F(UptrFixture, no_mem_leak_int_ptr) {
@@ -106,4 +106,49 @@ TEST_F(UptrFixture, polymorphism) {
         int y = yPtr->returnTwo();
         _NO_LEAK_CHECK(ASSERT_EQ(y, 2));
     });
+}
+
+TEST_F(UptrFixture, nested_ptrs) {
+    run([&]() {
+        u_ptr<u_ptr<std::string>> ptr2 = u_ptr<u_ptr<std::string>>("keon");
+        u_ptr<std::string> ptr = std::move(*ptr2.get());
+        std::string str = *ptr.get();
+        _NO_LEAK_CHECK(ASSERT_EQ(str, "keon"));
+    });
+}
+
+TEST_F(UptrFixture, arr_of_ptrs) {
+    #if 1
+    run([&]() {
+        const unsigned xSize = 4, ySize = 3;
+        u_ptr<u_ptr<std::string>> ptr2 = u_ptr<u_ptr<std::string[xSize]>[ySize]>();
+        std::string s;
+        unsigned count = 0;
+        for(unsigned ix = 0; ix < xSize; ++ix) {
+            for(unsigned iy = 0; iy < ySize; ++iy) {
+                ptr2.get()[iy].get()[ix] = s = 'A' + count;
+                ++count;
+            }
+        }
+        count = 0;
+        for(unsigned ix = 0; ix < xSize; ++ix) {
+            for(unsigned iy = 0; iy < ySize; ++iy) {
+                _NO_LEAK_CHECK(ASSERT_EQ(ptr2.get()[iy].get()[ix], s = 'A' + count));
+                ++count;
+            }
+        }
+    });
+    #endif
+}
+
+TEST_F(UptrFixture, scope_change) {
+    run([&]() {
+        auto f = [](u_ptr<std::string>& uptr) {
+            std::string s = *uptr.get();
+            return std::move(uptr);
+        };
+        u_ptr<std::string> ptr = u_ptr<std::string>("keon");
+        auto retptr = f(ptr);
+        _NO_LEAK_CHECK(ASSERT_EQ(*retptr.get(), "keon"));
+    });    
 }

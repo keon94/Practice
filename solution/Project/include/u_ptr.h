@@ -35,8 +35,7 @@ namespace util {
             static constexpr bool VALUE = true;
         };
 
-        template <typename T>
-        using Deleter = void(*)(T*);
+        using Deleter = void(*)(void*);
 
         template <typename T>
         class b_ptr {
@@ -56,23 +55,18 @@ namespace util {
 
     public:
 
-        u_ptr() :
+        template <typename ... Args> 
+        u_ptr(Args&&... args) :
             _deleter(setDefaultDeleter()),
             _raw(nullptr)
         {
-            if constexpr (IsArray<T>::VALUE && !Types<void, T>::ARE_SAME) {
-                _raw = new T();
-            }
+            if constexpr(!Types<void, T>::ARE_SAME)
+                _raw = new T(args...);
         }
 
         u_ptr(T* ptr) :
             _deleter(setDefaultDeleter()),
             _raw(ptr) {}
-
-        template <typename ... Args> //new T(args...)
-        explicit u_ptr(Args&&... args) :
-            _deleter(setDefaultDeleter()),
-            _raw(new T(args...)) {}
 
         ~u_ptr() {
             clean<T>();
@@ -83,20 +77,21 @@ namespace util {
         u_ptr& operator= (const u_ptr& other) = delete;
 
         template<typename U>
-        u_ptr(u_ptr<U>&& other) {
-            move<U>(other);
+        u_ptr(u_ptr<U>&& other) :
+             _raw (static_cast<b_ptr<U>&>(other).getRaw()),
+             _deleter(other.getDeleter()) 
+        {
+            static_cast<b_ptr<U>&>(other).setRaw(nullptr);
         }
 
         template<typename U>
         u_ptr& operator= (U* other) {
-            move<U>(other);
-            return *this;
+            return move<U>(other);
         }
 
         template<typename U>
         u_ptr& operator= (u_ptr<U>&& other) {
-            move<U>(other);
-            return *this;
+            return move<U>(other);
         }
 
         template<typename U>
@@ -141,17 +136,13 @@ namespace util {
             return getRaw();
         }
 
-        inline u_ptr& setDeleter(const Deleter<T>& deleter) {
+        inline u_ptr& setDeleter(const Deleter& deleter) {
             _deleter = deleter;
             return *this;
         }
 
-        template <typename U>
-        inline Deleter<U> getDeleter() const {
-            if constexpr (!Types<U, T>::ARE_SAME)
-                return [](U* addr) { delete addr; };
-            else
-                return _deleter;
+        inline Deleter getDeleter() const {
+            return _deleter;
         }
 
     private:
@@ -165,22 +156,22 @@ namespace util {
         }
 
         template<typename U>
-        void move(u_ptr<U>& other) {
+        u_ptr& move(u_ptr<U>& other) {
             if (_addr_(*this) != _addr_(other)) {
                 clean<T>();
                 _raw = static_cast<b_ptr<U>&>(other).getRaw();
-                if constexpr (!Types<void, U>::ARE_SAME)
-                    _deleter = other.getDeleter<T>();
+                _deleter = other.getDeleter();
                 static_cast<b_ptr<U>&>(other).setRaw(nullptr);
             }
+            return *this;
         }
 
         template<typename U>
-        void move(U* addr) {
+        u_ptr& move(U* addr) {
             clean<T>();
             _raw = addr;
-            if constexpr (!Types<void, U>::ARE_SAME)
-                _deleter = [](U* addr) { delete addr; };
+            _deleter = [](U* addr) { delete addr; };
+            return *this;
         }
 
         virtual T* getRaw() const override {
@@ -191,18 +182,18 @@ namespace util {
             _raw = addr;
         }
 
-        inline Deleter<T> setDefaultDeleter() {
+        inline Deleter setDefaultDeleter() {
             if constexpr (IsArray<T>::VALUE) {
-                return [](T* addr) { return delete[] addr; };
+                return [](void* addr) { delete[] static_cast<T*>(addr); };
             }
             else {
-                return [](T* addr) { return delete addr; };
+                return [](void* addr) { delete static_cast<T*>(addr); };
             }
         }
 
     private:
         void* _raw;
-        Deleter<T> _deleter;
+        Deleter _deleter;
     };
 
 }
