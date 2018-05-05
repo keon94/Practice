@@ -18,4 +18,12 @@
     <None Include="src\.gitkeep" />
     <None Include="include\.gitkeep" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\u_ptr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\array.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

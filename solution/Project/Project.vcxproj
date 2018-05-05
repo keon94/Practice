@@ -22,6 +22,10 @@
     <None Include="include\.gitkeep" />
     <None Include="src\.gitkeep" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\array.h" />
+    <ClInclude Include="include\u_ptr.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D6A8863C-1758-49D3-8C06-B6864D618F0A}</ProjectGuid>
